@@ -1,0 +1,58 @@
+= ROSA Fruits Application
+
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
+
+If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+
+== AWS Setup
+
+[source,shell script]
+----
+docker run -it --rm=true --name=setup \
+  -v "$PWD/ocp-sts:/home/tools/ocp-sts:Z" \
+  -v "$HOME/.aws:/home/tools/.aws" \
+  quay.io/kameshsampath/fedora-tools bash
+----
+
+== Running the application in dev mode
+
+You can run your application in dev mode that enables live coding using:
+
+[source,shell script]
+----
+./mvnw compile quarkus:dev
+----
+
+____
+
+*_NOTE:_* Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+
+____
+
+== Packaging and Deploying to OpenShift
+
+Create the Namespace
+
+[source,shell script]
+----
+oc new-project rosa-demos
+----
+
+Create the Service Account
+
+[source,shell script]
+----
+oc create sa rosa-demo-sa -n rosa-demos
+----
+
+You need to have the AWS Role ARN
+
+TODO: Annotate the SA
+
+Build and Deploy Application to Openshift
+
+Set the `AWS_REGION` environment variable
+[source,bash]
+----
+./mvnw clean package -Daws.region=$AWS_REGION  -Dkubernetes.deploy=true
+----

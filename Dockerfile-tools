@@ -1,0 +1,24 @@
+FROM docker.io/library/fedora
+
+USER root
+
+RUN dnf -y --nodocs install procps wget curl tar openssl unzip \
+    && cd /tmp \
+    && wget -Oopenshift-client-linux.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable-4.7/openshift-client-linux.tar.gz \
+    && tar --exclude='README.md' -C /usr/local/bin  -zxf openshift-client-linux.tar.gz \
+    && chmod +x /usr/local/bin/oc /usr/local/bin/kubectl \
+    && wget -Oawscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update \
+    && cd - \
+    && dnf -y clean all
+
+# Set the user to run this image as
+RUN groupadd -r tools -g 1001 \
+    && useradd -u 1001 -r -g tools -m -s /sbin/nologin -c "Tools user" tools
+
+# Set the working directory to jboss' user home directory
+WORKDIR /home/tools
+
+# Specify the user which should be used to execute all commands below
+USER 1001
