@@ -22,6 +22,7 @@
     <skipTests>true</skipTests>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <jkube.build.switchToDeployment>true</jkube.build.switchToDeployment>
+    <jkube.docker.imagePullPolicy>Always</jkube.docker.imagePullPolicy>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -43,10 +44,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-mutiny</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-amazon-dynamodb</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
@@ -56,13 +54,38 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-health</artifactId>
     </dependency>
+
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
-      <artifactId>url-connection-client</artifactId>
+      <artifactId>dynamodb</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>apache-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>netty-nio-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+    </dependency>
+
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>sts</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>netty-nio-client</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -125,15 +148,60 @@
         <version>1.1.1</version>
         <executions>
           <execution>
-            <id>jkube</id>
+            <id>jkube-all</id>
             <phase>package</phase>
             <goals>
               <goal>resource</goal>
               <goal>build</goal>
-              <goal>helm</goal>
+              <goal>apply</goal>
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <images>
+            <image>
+              <name>rosa-fruits-app:latest</name>
+              <build>
+                <from>quay.io/jkube/jkube-java-binary-s2i:0.0.9</from>
+                <env>
+                  <JAVA_APP_JAR>quarkus-run.jar</JAVA_APP_JAR>
+                </env>
+                <assembly>
+                  <mode>dir</mode>
+                  <targetDir>/deployments</targetDir>
+                  <inline>
+                    <id>customized-quarkus</id>
+                    <files>
+                      <file>
+                        <source>target/quarkus-app/quarkus-run.jar</source>
+                        <outputDirectory>.</outputDirectory>
+                      </file>
+                    </files>
+                    <fileSets>
+                      <fileSet>
+                        <directory>${project.basedir}/target/quarkus-app/lib
+                        </directory>
+                        <outputDirectory>lib</outputDirectory>
+                      </fileSet>
+                      <fileSet>
+                        <directory>${project.basedir}/target/quarkus-app/app
+                        </directory>
+                        <outputDirectory>app</outputDirectory>
+                      </fileSet>
+                      <fileSet>
+                        <directory>
+                          ${project.basedir}/target/quarkus-app/quarkus
+                        </directory>
+                        <outputDirectory>quarkus</outputDirectory>
+                      </fileSet>
+                    </fileSets>
+                  </inline>
+                </assembly>
+                <ports>8080</ports>
+              </build>
+            </image>
+          </images>
+        </configuration>
       </plugin>
     </plugins>
   </build>

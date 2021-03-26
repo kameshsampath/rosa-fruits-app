@@ -38,21 +38,24 @@ Create the Namespace
 oc new-project rosa-demos
 ----
 
-Create the Service Account
+[IMPORTANT]
+====
+ - You need to have the AWS Role ARN
+ - The AWS Region
+====
 
-[source,shell script]
+Set the `AWS_REGION` and AWS_ROLE_ARN environment variable
+
+[source,bash]
 ----
-oc create sa rosa-demo-sa -n rosa-demos
+export AWS_REGION=<your aws region>
+export AWS_ROLE_ARN=<your aws role ARN>
 ----
-
-You need to have the AWS Role ARN
-
-TODO: Annotate the SA
 
 Build and Deploy Application to Openshift
 
 Set the `AWS_REGION` environment variable
 [source,bash]
 ----
-./mvnw clean package -Daws.region=$AWS_REGION  -Dkubernetes.deploy=true
+./mvnw clean package -Daws.region=$AWS_REGION  -Dkubernetes.deploy=true oc:apply
 ----
