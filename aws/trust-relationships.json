@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "<your oidc provider ARN>"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "<your oidc bucket>:sub": "system:serviceaccount:rosa-demos:rosa-demo-sa"
+        }
+      }
+    }
+  ]
+}

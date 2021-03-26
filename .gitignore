@@ -9,7 +9,9 @@ release.properties
 .project
 .classpath
 .settings/
-bin/
+bin
+!bin/self-hosted-darwin
+!bin/self-hosted-linux
 
 # IntelliJ
 .idea
