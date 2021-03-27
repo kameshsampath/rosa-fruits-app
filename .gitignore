@@ -42,3 +42,10 @@ nb-configuration.xml
 work
 .aws/config
 .aws/credentials
+context
+.kube
+project/**
+!project/playbook.yml
+!project/ansible.cfg
+!project/run.sh
+
