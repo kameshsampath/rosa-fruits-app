@@ -39,3 +39,6 @@ nb-configuration.xml
 
 # Local environment
 .env
+work
+.aws/config
+.aws/credentials

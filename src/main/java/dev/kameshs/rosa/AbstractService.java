@@ -16,14 +16,14 @@ public abstract class AbstractService {
     return "QuarkusFruits";
   }
 
-  protected ScanRequest scanRequest() {
+  protected ScanRequest scanRequest() throws Exception {
     return ScanRequest.builder()
                       .tableName(getTableName())
                       .attributesToGet(FRUIT_NAME_COL, FRUIT_SEASON)
                       .build();
   }
 
-  protected PutItemRequest putRequest(Fruit fruit) {
+  protected PutItemRequest putRequest(Fruit fruit) throws Exception {
     Map<String, AttributeValue> item = new HashMap<>();
     item.put(FRUIT_NAME_COL, AttributeValue.builder()
                                            .s(fruit.getName())
@@ -38,7 +38,7 @@ public abstract class AbstractService {
                          .build();
   }
 
-  protected GetItemRequest getRequest(String name) {
+  protected GetItemRequest getRequest(String name) throws Exception {
     Map<String, AttributeValue> key = new HashMap<>();
     key.put(FRUIT_NAME_COL, AttributeValue.builder()
                                           .s(name)

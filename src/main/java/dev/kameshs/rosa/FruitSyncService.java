@@ -14,7 +14,7 @@ public class FruitSyncService extends AbstractService {
   @Named("WebIdProviderClient")
   DynamoDbClient dynamoDB;
 
-  public List<Fruit> findAll() {
+  public List<Fruit> findAll() throws Exception {
     return dynamoDB.scanPaginator(scanRequest())
                    .items()
                    .stream()
@@ -22,12 +22,12 @@ public class FruitSyncService extends AbstractService {
                    .collect(Collectors.toList());
   }
 
-  public List<Fruit> add(Fruit fruit) {
+  public List<Fruit> add(Fruit fruit) throws Exception  {
     dynamoDB.putItem(putRequest(fruit));
     return findAll();
   }
 
-  public Fruit get(String name) {
+  public Fruit get(String name) throws Exception  {
     return Fruit.from(dynamoDB.getItem(getRequest(name))
                               .item());
   }
