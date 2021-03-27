@@ -38,14 +38,13 @@ nb-configuration.xml
 *.rej
 
 # Local environment
-.env
+setup/.env
 **/work/
-.aws/config
-.aws/credentials
-context
-.kube
-project/**
-!project/playbook.yml
-!project/ansible.cfg
-!project/run.sh
-
+setup/context
+setup/.kube
+setup/project/**
+!setup/project/playbook.yml
+!setup/project/roles
+!setup/project/ansible.cfg
+!setup/project/run.sh
+setup/env/passwords
