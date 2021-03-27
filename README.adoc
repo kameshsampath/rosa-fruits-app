@@ -34,7 +34,7 @@ export DEMO_HOME="$PWD"
 
 == AWS Preparation
 
-./OIDC_Provider_Setup.adoc[Prepare AWS Resources] for use with the Quarkus Application.
+link:./OIDC_Provider_Setup.adoc[Prepare AWS Resources] for use with the Fruits Application.
 
 == Packaging and Deploying to OpenShift
 
