@@ -37,14 +37,15 @@ nb-configuration.xml
 *.orig
 *.rej
 
-# Local environment
+# Setup and Project Directory
 setup/.env
 **/work/
 setup/context
 setup/.kube
-setup/project/**
-!setup/project/playbook.yml
+setup/project/bin
+# overrides
 !setup/project/roles
+!setup/project/playbook.yml
 !setup/project/ansible.cfg
 !setup/project/run.sh
 setup/env/passwords

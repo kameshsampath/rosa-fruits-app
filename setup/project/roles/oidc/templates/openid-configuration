@@ -1,6 +1,6 @@
 {
-    "issuer": "https://s3.$AWS_REGION.amazonaws.com/$OIDC_BUCKET_NAME",
-    "jwks_uri": "https://s3.$AWS_REGION.amazonaws.com/$OIDC_BUCKET_NAME/keys.json",
+    "issuer": "https://s3.{{ aws_region }}.amazonaws.com/{{ oidc_bucket_name }}",
+    "jwks_uri": "https://s3.{{ aws_region }}.amazonaws.com/{{ oidc_bucket_name }}/keys.json",
     "authorization_endpoint": "urn:kubernetes:programmatic_authorization",
     "response_types_supported": [
         "id_token"
