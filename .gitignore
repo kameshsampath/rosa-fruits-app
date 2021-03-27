@@ -9,9 +9,9 @@ release.properties
 .project
 .classpath
 .settings/
-bin
-!bin/self-hosted-darwin
-!bin/self-hosted-linux
+bin/*
+!setup/bin/self-hosted-darwin
+!setup/bin/self-hosted-linux
 
 # IntelliJ
 .idea
@@ -42,7 +42,7 @@ setup/.env
 **/work/
 setup/context
 setup/.kube
-setup/project/bin
+setup/project/**
 # overrides
 !setup/project/roles
 !setup/project/playbook.yml

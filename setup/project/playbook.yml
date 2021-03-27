@@ -3,7 +3,7 @@
   connection: local
 
   vars:
-    rollback: true
+    rollback: false
 
   vars_prompt:
     - name: aws_access_key
