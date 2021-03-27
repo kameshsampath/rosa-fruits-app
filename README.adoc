@@ -1,61 +1,131 @@
 = ROSA Fruits Application
+:experimental:
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+A simple REST API that uses https://aws.amazon.com/dynamodb/[AWS DynomoDB] as its data store. The application is intended to demonstrate how to integrate the AWS Native Services from an OpenShift cluster deployed via   https://aws.amazon.com/rosa/[ROSA].
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+== Pre-Requisites
 
-== AWS Setup
+- AWS Account with permissions to:
+ * Create IAM Role
+ * Create IAM Policy
+ * Create OIDC Provider
 
-[source,shell script]
+- https://aws.amazon.com/cli/[AWS CLI]
+
+- https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable-4.7/[OpenShift Client(oc)]
+
+- https://git-scm.com/[Git]
+
+- https://stedolan.github.io/[jq]
+
+- Ensure envsubst utility is available:
+* Linux - gettext package
+* macOS - `brew install gettext`
+
+- https://httpie.io/[HTTPie]
+
+== Download Project Sources
+
+[source,bash]
 ----
-docker run -it --rm=true --name=setup \
-  -v "$PWD/ocp-sts:/home/tools/ocp-sts:Z" \
-  -v "$HOME/.aws:/home/tools/.aws" \
-  quay.io/kameshsampath/fedora-tools bash
+git clone https://github.com/kameshsampath/rosa-fruits-app
+export DEMO_HOME="$PWD"
 ----
 
-== Running the application in dev mode
+== AWS Preparation
 
-You can run your application in dev mode that enables live coding using:
-
-[source,shell script]
-----
-./mvnw compile quarkus:dev
-----
-
-____
-
-*_NOTE:_* Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
-
-____
+./OIDC_Provider_Setup.adoc[Prepare AWS Resources] for use with the Quarkus Application.
 
 == Packaging and Deploying to OpenShift
 
-Create the Namespace
-
-[source,shell script]
-----
-oc new-project rosa-demos
-----
-
-[IMPORTANT]
-====
- - You need to have the AWS Role ARN
- - The AWS Region
-====
-
-Set the `AWS_REGION` and AWS_ROLE_ARN environment variable
+The application uses https://www.eclipse.org/jkube/[Eclipse JKube] maven plugin to build and deploy the Java Application to OpenShift.
 
 [source,bash]
 ----
-export AWS_REGION=<your aws region>
-export AWS_ROLE_ARN=<your aws role ARN>
+./mvnw -Daws.role.arn=$ROSA_DEMO_ROLE_ARN -Daws.region=$AWS_REGION clean package
 ----
 
-Build and Deploy Application to Openshift
+== Testing Application
 
-Set the `AWS_REGION` environment variable
+The AWS IAM role allows accessing the application only from `rosa-demos` workspace and as `rosa-demo-sa`,
+
+Get the Route:
+
 [source,bash]
 ----
-./mvnw clean package -Daws.region=$AWS_REGION  -Dkubernetes.deploy=true oc:apply
+export APP_URL=$(oc get route rosa-fruits-app -n rosa-demos)
 ----
+
+The following REST URI end points are available:
+
+[NOTE,caption=GET Methods]
+====
+* Lists all fruit
+
+e.g.
+
+[source,bash]
+----
+http $APP_URL/api/fruit/apple
+----
+
+* $APP_URL/api/fruit/{name} - Get a fruit by its `name`
+
+e.g.
+
+[source,bash]
+----
+http $APP_URL/api/fruit/apple
+----
+
+====
+
+[NOTE,caption=POST Methods]
+====
+
+* Adds a fruit, takes a JSON payload
+
+[source,json]
+----
+{
+  "name": "apple",
+  "season": "fall"
+}
+----
+
+e.g.
+
+[source,bash]
+----
+http POST $APP_URL/api/fruit name=apple season=fall
+----
+
+====
+
+[NOTE,caption=DELETE Methods]
+====
+* Delete a fruit by its `name`
+
+e.g.
+
+[source,bash]
+----
+http DELETE $APP_URL/api/fruit/apple
+----
+====
+
+== Verify IAM
+
+To make sure the IAM works, try deploying the application a different namespace, for e.g. `demos`
+
+[source,bash]
+----
+oc new-project demos
+./mvnw -Daws.role.arn=$ROSA_DEMO_ROLE_ARN -Daws.region=$AWS_REGION clean package
+----
+
+Now when you try any of the API methods above, you should get HTTP 403 as the IAM policy controls the Service Account (`rosa-demo-sa`) and its namespace.
+
+== Powered by
+
+This project uses Quarkus, the Supersonic Subatomic Java Framework. If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
