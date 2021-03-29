@@ -16,13 +16,9 @@ A simple REST API that uses https://aws.amazon.com/dynamodb/[AWS DynomoDB] as it
 
 - https://git-scm.com/[Git]
 
-- https://stedolan.github.io/[jq]
-
-- Ensure envsubst utility is available:
-* Linux - gettext package
-* macOS - `brew install gettext`
-
 - https://httpie.io/[HTTPie]
+
+- Java 11
 
 == Download Project Sources
 
@@ -30,11 +26,34 @@ A simple REST API that uses https://aws.amazon.com/dynamodb/[AWS DynomoDB] as it
 ----
 git clone https://github.com/kameshsampath/rosa-fruits-app
 export DEMO_HOME="$PWD"
+export AWS_ACCOUNT=$(aws sts get-caller-identity | jq -r ".Account")
+export OIDC_BUCKET_NAME="rosa-demos-oidc"
+export AWS_REGION="us-west-2"
+export ROSA_DEMO_ROLE_NAME="$AWS_ACCOUNT-rosa-demos-role"
+export ROSA_DEMO_ROLE_ARN="arn:aws:iam::$AWS_ACCOUNT:role/$ROSA_DEMO_ROLE_NAME"
 ----
+
+== ROSA Cluster Setup
+
+[source,bash]
+----
+rosa create cluster --cluster-name="my-rosa-cluster"
+----
+
+The command above will create the ROSA cluster in your default AWS region, type `rosa --help` for more information.
 
 == AWS Preparation
 
-link:./OIDC_Provider_Setup.adoc[Prepare AWS Resources] for use with the Fruits Application.
+The example will be using custom OIDC provider on AWS to demonstrate the use of ProjectedServiceAccount Token via STS, the following section details on how to setup the same.
+
+- Copy `$DEMO_HOME/setup/env/passwords.example` to `$DEMO_HOME/setup/env/passwords`
+
+- Update the `$DEMO_HOME/setup/env/passwords` with your AWS Access and Secret Keys.
+
+[source,bash]
+----
+$DEMO_HOME/setup/hack.sh
+----
 
 == Packaging and Deploying to OpenShift
 
@@ -42,7 +61,8 @@ The application uses https://www.eclipse.org/jkube/[Eclipse JKube] maven plugin 
 
 [source,bash]
 ----
-./mvnw -Daws.role.arn=$ROSA_DEMO_ROLE_ARN -Daws.region=$AWS_REGION clean package
+./mvnw -Daws.role.arn=$ROSA_DEMO_ROLE_ARN \
+  -Daws.region=$AWS_REGION clean package
 ----
 
 == Testing Application
@@ -125,6 +145,33 @@ oc new-project demos
 ----
 
 Now when you try any of the API methods above, you should get HTTP 403 as the IAM policy controls the Service Account (`rosa-demo-sa`) and its namespace.
+
+== Development
+
+Start the local DynamoDB server
+
+[source,bash]
+----
+docker compose up -d $DEMO_HOME/docker-compose.yml
+----
+
+Access the local DynamoDB server using http://localhost:8000/shell, and run the following command to create the table:
+
+[source,bash]
+----
+var params = {
+    TableName: 'QuarkusFruits',
+    KeySchema: [{ AttributeName: 'fruitName', KeyType: 'HASH' }],
+    AttributeDefinitions: [{  AttributeName: 'fruitName', AttributeType: 'S', }],
+    ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1, }
+};
+
+dynamodb.createTable(params, function(err, data) {
+    if (err) ppJson(err);
+    else ppJson(data);
+
+});
+----
 
 == Powered by
 

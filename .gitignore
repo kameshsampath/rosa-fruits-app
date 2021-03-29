@@ -10,8 +10,8 @@ release.properties
 .classpath
 .settings/
 bin/*
-!setup/bin/self-hosted-darwin
-!setup/bin/self-hosted-linux
+!bin/self-hosted-darwin
+!bin/self-hosted-linux
 
 # IntelliJ
 .idea
@@ -37,15 +37,13 @@ nb-configuration.xml
 *.orig
 *.rej
 
-# Setup and Project Directory
-setup/.env
+.env
 **/work/
-setup/context
-setup/.kube
-setup/project/**
-# overrides
-!setup/project/roles
-!setup/project/playbook.yml
-!setup/project/ansible.cfg
-!setup/project/run.sh
-setup/env/passwords
+.kube
+playbook.yml
+project
+!project/playbook.yml
+!project/run.sh
+!project/ansible.cfg
+docker
+passwords

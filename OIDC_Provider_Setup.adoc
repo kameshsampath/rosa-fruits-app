@@ -1,6 +1,6 @@
 = OIDC Provider Setup
 
-The current Red Hat OpenShift on AWS(RSOA) does not have a OIDC discovery endpoint, hence we need to have one setup to complete the working of this demo.
+The current Red Hat OpenShift on AWS(ROSA) does not have a OIDC discovery endpoint, hence we need to have one setup to complete the working of this demo.
 
 [#oidc-env-variables]
 == Environment Variables
@@ -193,7 +193,7 @@ Set the Role ARN Environment variable
 
 [source,bash]
 ----
-export ROSA_DEMO_ROLE_ARN="arn:aws:iam::$AWS_ACCOUNT:role/$OIDC_ISSUER_PATH"
+export ROSA_DEMO_ROLE_ARN="arn:aws:iam::$AWS_ACCOUNT:role/$ROSA_DEMO_ROLE_NAME"
 ----
 
 NOTE: We might use the same role ARN when deploying the application.

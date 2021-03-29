@@ -13,4 +13,4 @@
       prompt: Enter AWS Secret Key
 
   roles:
-    - oidc
+    - kameshsampath.rosa_demos

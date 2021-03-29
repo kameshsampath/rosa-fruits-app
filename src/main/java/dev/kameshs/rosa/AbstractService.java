@@ -3,6 +3,7 @@ package dev.kameshs.rosa;
 import java.util.HashMap;
 import java.util.Map;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
@@ -49,5 +50,17 @@ public abstract class AbstractService {
                          .key(key)
                          .attributesToGet(FRUIT_NAME_COL, FRUIT_SEASON)
                          .build();
+  }
+
+  protected DeleteItemRequest deleteRequest(String name) throws Exception {
+    Map<String, AttributeValue> key = new HashMap<>();
+    key.put(FRUIT_NAME_COL, AttributeValue.builder()
+                                          .s(name)
+                                          .build());
+
+    return DeleteItemRequest.builder()
+                            .tableName(getTableName())
+                            .key(key)
+                            .build();
   }
 }
