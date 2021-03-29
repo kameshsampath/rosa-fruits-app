@@ -1,9 +1,9 @@
 package dev.kameshs.rosa;
 
 import java.net.URI;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
 import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.sts.model.StsException;
@@ -70,7 +71,7 @@ public class FruitResource {
     try {
       LOGGER.log(Level.INFO, "Saving fruit {0}", fruit);
       service.add(fruit);
-      return Response.created(URI.create("/api/fruit/" + fruit.getName()))
+      return Response.created(URI.create("/api/fruit/" + fruit.name))
                      .build();
     } catch (StsException e) {
       return stsErrorResponse(e, "Error Adding Fruit");

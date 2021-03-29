@@ -1,10 +1,12 @@
 package dev.kameshs.rosa;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @ApplicationScoped
 public class FruitSyncService extends AbstractService {
@@ -16,7 +18,14 @@ public class FruitSyncService extends AbstractService {
     return dynamoDB.scanPaginator(scanRequest())
                    .items()
                    .stream()
-                   .map(Fruit::from)
+                   .map(f -> {
+                     Fruit fruit = new Fruit();
+                     fruit.name = f.get(FRUIT_NAME_COL)
+                                   .s();
+                     fruit.season = f.get(FRUIT_SEASON)
+                                   .s();
+                     return fruit;
+                   })
                    .collect(Collectors.toList());
   }
 
@@ -26,8 +35,14 @@ public class FruitSyncService extends AbstractService {
   }
 
   public Fruit get(String name) throws Exception {
-    return Fruit.from(dynamoDB.getItem(getRequest(name))
-                              .item());
+    Map<String, AttributeValue> f = dynamoDB.getItem(getRequest(name))
+                                            .item();
+    Fruit fruit = new Fruit();
+    fruit.name = f.get(FRUIT_NAME_COL)
+                  .s();
+    fruit.season = f.get(FRUIT_SEASON)
+                    .s();
+    return fruit;
   }
 
   public void delete(String name) throws Exception {

@@ -27,10 +27,10 @@ public abstract class AbstractService {
   protected PutItemRequest putRequest(Fruit fruit) throws Exception {
     Map<String, AttributeValue> item = new HashMap<>();
     item.put(FRUIT_NAME_COL, AttributeValue.builder()
-                                           .s(fruit.getName())
+        .s(fruit.name)
                                            .build());
     item.put(FRUIT_SEASON, AttributeValue.builder()
-                                         .s(fruit.getSeason())
+        .s(fruit.season)
                                          .build());
 
     return PutItemRequest.builder()
