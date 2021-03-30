@@ -135,7 +135,7 @@ Create an IAM Policy that allows Read, Write, Query and Scan access to the Dynam
 
 [source,bash]
 ----
-export ROSA_DEMO_POLICY_NAME="$AWS_ACCOUNT-rosa-demos-policy"
+export ROSA_DEMO_POLICY_NAME="ROSADemosPolicy"
 
 cp $DEMO_HOME/.aws/policy.json .
 
@@ -155,7 +155,7 @@ Let us create the IAM role and attach the policy to it.
 
 [source,bash]
 ----
-export ROSA_DEMO_ROLE_NAME="$AWS_ACCOUNT-rosa-demos-role"
+export ROSA_DEMO_ROLE_NAME="ROSADemosRole"
 export OIDC_ISSUER_PATH=$(echo OIDC_ISSUER_URL | cut -f 3- -d'/')
 export OIDC_PROVIDER_ARN="arn:aws:iam::$AWS_ACCOUNT:oidc-provider/$OIDC_ISSUER_PATH"
 
