@@ -118,6 +118,8 @@ Get the Route:
 export APP_URL="http://$(oc get route rosa-fruits-app -n rosa-demos -ojsonpath='{.spec.host}')"
 ----
 
+You can access the Swagger UI from "http://$APP_URL/swagger-ui" and perform the REST operations.
+
 The following REST URI end points are available:
 
 [NOTE,caption=GET Methods]
