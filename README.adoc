@@ -48,7 +48,7 @@ As prerequisite for this demo, it's required to setup few AWS resources,
 - IAM Role `ROSADemosRole` that will attached to the OpenShift SA
 - IAM OpenId Connect Provider that will be used by OpenShift to authenticate the SA token
 
-The `$DEMO_HOME/setup/hack.sh` will set all the aforementioned resources using https://www.ansible.com/[Ansible], for the Ansible to setup the resoureces, you need to
+The `$DEMO_HOME/setup/hack.sh` will set all the aforementioned resources using https://www.ansible.com/[Ansible], for the Ansible to setup the resources, you need to
 
 Setup `KUBCONFIG` variable:
 
@@ -74,6 +74,11 @@ To create the AWS resources, its required to provide AWS credentials to Ansible:
 [NOTE]
 ====
 The `setup/.kube` and `setup/env/passwords` file are excluded by Git
+====
+
+[IMPORTANT]
+====
+The parameters used for the Ansible playbook are set in link:setup/env/extravars[$DEMO_HOME/setup/env/extravars] file. For detailed description of the parameters, default value and its description check https://github.com/kameshsampath/ansible-role-rosa-demos#role-variables[Ansible Role ROSA Demos]
 ====
 
 [source,bash]
