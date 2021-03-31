@@ -3,7 +3,16 @@
   connection: local
 
   vars:
+    # Details of these parameters:
+    # https://github.com/kameshsampath/ansible-role-rosa-demos#role-variables
+    pkcs_key_file: "sa-singer.pub"
+    aws_region: "us-west-2"
+    oidc_bucket_name: "rosa-demos-oidc"
+    oidc_issuer_url: "https://s3.{{ aws_region }}.amazonaws.com/{{ oidc_bucket_name }}"
+    rosa_demo_role_name: ROSADemosRole
+    rosa_demo_policy_name: ROSADemosPolicy
     rollback: False
+    create_aws_credentials_file: True
     iam: True
 
   vars_prompt:
