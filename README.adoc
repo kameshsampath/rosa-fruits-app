@@ -54,8 +54,8 @@ Setup `KUBCONFIG` variable:
 
 [source,bash]
 ----
-mkdir -p "$DEMO_HOME/setup/.kube/config"
-export KUBECONFIG="$DEMO_HOME/setup/.kube/config"
+mkdir -p "$DEMO_HOME/.kube/config"
+export KUBECONFIG="$DEMO_HOME/.kube/config"
 ----
 
 Now Login into the OpenShift ROSA cluster as a user with ClusterAdmin privileges:
