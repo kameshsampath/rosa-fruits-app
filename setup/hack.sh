@@ -14,7 +14,6 @@ fi
 
 $CONTAINER_CMD run -it  \
    -v "$CURRENT_DIR/project:/runner/project:z" \
-   -v "$CURRENT_DIR/bin:/runner/project/bin:z" \
    -v "$CURRENT_DIR/inventory:/runner/inventory:z" \
    -v "$CURRENT_DIR/env:/runner/env:z" \
    -v "$CURRENT_DIR/.kube:/home/runner/.kube:z" \

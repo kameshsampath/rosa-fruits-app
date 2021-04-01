@@ -18,7 +18,7 @@ A simple REST API that uses https://aws.amazon.com/dynamodb/[AWS DynomoDB] as it
 
 - https://httpie.io/[HTTPie]
 
-- https://stedolan.github.io/jq/manual/
+- https://stedolan.github.io/jq/manual/[jq]
 
 - Java 11
 
@@ -50,7 +50,7 @@ As prerequisite for this demo, it's required to setup few AWS resources,
 
 The `$DEMO_HOME/setup/hack.sh` will set all the aforementioned resources using https://www.ansible.com/[Ansible], for the Ansible to setup the resources, you need to
 
-Setup `KUBCONFIG` variable:
+Setup `KUBECONFIG` variable, this variable will be used in the Ansible Container to connect to the OpenShift Cluster.
 
 [source,bash]
 ----
@@ -90,7 +90,7 @@ Set environment variable `$ROSA_DEMO_ROLE_ARN`
 
 [source]
 ----
-export ROSA_DEMO_ROLE_ARN=$(aws iam get-role --role-name ROSADemosRole | jq '.Role.Arn')
+export ROSA_DEMO_ROLE_ARN=$(aws iam get-role --role-name ROSADemosRole | jq -r '.Role.Arn')
 ----
 
 == Packaging and Deploying to OpenShift
