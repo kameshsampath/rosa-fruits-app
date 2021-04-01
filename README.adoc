@@ -54,7 +54,7 @@ Setup `KUBCONFIG` variable:
 
 [source,bash]
 ----
-mkdir -p setup/.kubec/config
+mkdir -p "$DEMO_HOME/setup/.kube/config"
 export KUBECONFIG="$DEMO_HOME/setup/.kube/config"
 ----
 
