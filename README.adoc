@@ -42,6 +42,27 @@ The command above will create the ROSA cluster in your default AWS region, type 
 
 == AWS Preparation
 
+=== DynamoDB
+
+Connect to the AWS DynamoDB service and run the following commands to create the table:
+
+[source,javascript]
+----
+var params = {
+    TableName: 'QuarkusFruits',
+    KeySchema: [{ AttributeName: 'fruitName', KeyType: 'HASH' }],
+    AttributeDefinitions: [{  AttributeName: 'fruitName', AttributeType: 'S', }],
+    ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1, }
+};
+
+dynamodb.createTable(params, function(err, data) {
+if (err) ppJson(err);
+else ppJson(data);
+
+});
+----
+
+=== IAM
 As prerequisite for this demo, it's required to setup few AWS resources,
 
 - IAM Policy `ROSADemosPolicy` which will restrict the OpenShift SA to allow only DynamoDB Operations

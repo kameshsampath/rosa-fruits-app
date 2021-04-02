@@ -1,15 +1,12 @@
 package dev.kameshs.rosa;
 
+import io.quarkus.arc.profile.IfBuildProfile;
 import java.net.URI;
 import java.util.logging.Logger;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Produces;
-
+import javax.enterprise.inject.Default;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import io.quarkus.arc.DefaultBean;
-import io.quarkus.arc.profile.IfBuildProfile;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
@@ -17,7 +14,7 @@ import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheSdkHttpService;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-@Dependent
+@Component
 public class AWSUtils {
 
   private static final Logger LOGGER = Logger.getLogger(
@@ -27,8 +24,8 @@ public class AWSUtils {
   String localEndPointURI;
 
   @IfBuildProfile("prod")
-  @DefaultBean
-  @Produces
+  @Bean
+  @Default
   public DynamoDbClient dynamoDbClient() {
     LOGGER.info("Building DynamoDbClient with WebIdentityProvider");
     SdkHttpClient httpClient = new ApacheSdkHttpService().createHttpClientBuilder()
@@ -44,10 +41,11 @@ public class AWSUtils {
   }
 
   @IfBuildProfile("dev")
-  @DefaultBean
-  @Produces
+  @Bean
+  @Default
   public DynamoDbClient devDynamoDbClient() {
-    LOGGER.info("Building DynamoDbClient with Static Credentials:"+localEndPointURI);
+    LOGGER.info(
+      "Building DynamoDbClient with Static Credentials:" + localEndPointURI);
     SdkHttpClient httpClient = new ApacheSdkHttpService().createHttpClientBuilder()
                                                          .build();
 
