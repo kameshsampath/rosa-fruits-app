@@ -144,6 +144,13 @@ Get the Route:
 export APP_URL="http://$(oc get route rosa-fruits-app -n rosa-demos -ojsonpath='{.spec.host}')"
 ----
 
+=== Application UI
+
+Open the `$APP_URL` in your browser. The UI will allow you to list, add and delete fruits.
+
+[NOTE]: The List will display an error if you are not authorized to access the APP :)
+
+=== Using Swagger UI
 You can access the Swagger UI from "http://$APP_URL/swagger-ui" and perform the REST operations.
 
 The following REST URI end points are available:
@@ -250,6 +257,8 @@ Now start Quarkus Application in dev mode
 ----
 ./mvnw clean compile -Daws.region='us-west-2' quarkus:dev
 ----
+
+The UI source code is located in `$DEMO_HOME/ui`, which is a https://reactjs.org[React] app.
 
 == Cleanup
 

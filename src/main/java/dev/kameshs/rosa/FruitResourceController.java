@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
-import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.sts.model.StsException;
 
 @SuppressWarnings("rawtypes")
@@ -36,9 +35,7 @@ public class FruitResourceController {
       return stsErrorResponse(e, "Error Getting Fruits");
     } catch (Exception e) {
       LOGGER.log(Level.SEVERE, "Error Getting Fruits", e);
-      return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .build();
+      return otherErrorResponse(e);
     }
   }
 
@@ -93,12 +90,18 @@ public class FruitResourceController {
     }
   }
 
+  private ResponseEntity otherErrorResponse(Exception e) {
+    Error err = Error.internalServerError(e);
+    return ResponseEntity
+      .status(err.status)
+      .body(err);
+  }
+
   private ResponseEntity stsErrorResponse(StsException e, String s) {
     AwsErrorDetails awsErrorDetails = e.awsErrorDetails();
     LOGGER.log(Level.SEVERE, awsErrorDetails.errorMessage(), e);
-    SdkHttpResponse httpResponse = awsErrorDetails
-      .sdkHttpResponse();
-    return ResponseEntity.status(httpResponse.statusCode())
-                         .body(awsErrorDetails.errorMessage());
+    Error err = Error.fromAwsErrorDetails(awsErrorDetails);
+    return ResponseEntity.status(err.status)
+                         .body(err);
   }
 }

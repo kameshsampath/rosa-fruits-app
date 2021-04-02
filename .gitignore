@@ -47,3 +47,6 @@ project
 !project/ansible.cfg
 docker
 passwords
+**/node_modules
+yarn.lock
+/ui/build/
