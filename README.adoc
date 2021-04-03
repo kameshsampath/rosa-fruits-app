@@ -258,7 +258,7 @@ Now start Quarkus Application in dev mode
 ./mvnw clean compile -Daws.region='us-west-2' quarkus:dev
 ----
 
-The UI source code is located in `$DEMO_HOME/ui`, which is a https://reactjs.org[React] app.
+The UI source code is located in `$DEMO_HOME/src/main/frontend`, which is a https://reactjs.org[React] app.
 
 == Cleanup
 
