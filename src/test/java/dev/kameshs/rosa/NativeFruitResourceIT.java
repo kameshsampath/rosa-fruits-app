@@ -3,8 +3,8 @@ package dev.kameshs.rosa;
 import io.quarkus.test.junit.NativeImageTest;
 
 @NativeImageTest
-public class NativeFruitResourceControllerIT extends
-  FruitResourceControllerTest {
+public class NativeFruitResourceIT extends
+  FruitResourceTest {
 
     // Execute the same tests but in native mode.
 }

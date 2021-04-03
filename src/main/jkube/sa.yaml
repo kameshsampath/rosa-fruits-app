@@ -5,3 +5,4 @@ metadata:
   name: rosa-demo-sa
   annotations:
     eks.amazonaws.com/role-arn: ${aws.role.arn}
+    eks.amazonaws.com/sts-regional-endpoints: "true"

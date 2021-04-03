@@ -1,20 +1,21 @@
 package dev.kameshs.rosa;
 
+import io.quarkus.arc.DefaultBean;
 import io.quarkus.arc.profile.IfBuildProfile;
 import java.net.URI;
 import java.util.logging.Logger;
-import javax.enterprise.inject.Default;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheSdkHttpService;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-@Component
+@Dependent
 public class AWSUtils {
 
   private static final Logger LOGGER = Logger.getLogger(
@@ -24,8 +25,8 @@ public class AWSUtils {
   String localEndPointURI;
 
   @IfBuildProfile("prod")
-  @Bean
-  @Default
+  @DefaultBean
+  @Produces
   public DynamoDbClient dynamoDbClient() {
     LOGGER.info("Building DynamoDbClient with WebIdentityProvider");
     SdkHttpClient httpClient = new ApacheSdkHttpService().createHttpClientBuilder()
@@ -41,8 +42,8 @@ public class AWSUtils {
   }
 
   @IfBuildProfile("dev")
-  @Bean
-  @Default
+  @DefaultBean
+  @Produces
   public DynamoDbClient devDynamoDbClient() {
     LOGGER.info(
       "Building DynamoDbClient with Static Credentials:" + localEndPointURI);
@@ -58,6 +59,7 @@ public class AWSUtils {
     return DynamoDbClient.builder()
                          .endpointOverride(URI.create(localEndPointURI))
                          .httpClient(httpClient)
+                         .region(Region.AP_SOUTH_1)
                          .credentialsProvider(
                            credentialsProvider)
                          .build();

@@ -22,6 +22,10 @@
     <quarkus.platform.version>1.13.0.Final</quarkus.platform.version>
     <skipTests>true</skipTests>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+    <jkube-maven-plugin.version>1.1.1</jkube-maven-plugin.version>
+    <jkube.docker.imagePullPolicy>Always</jkube.docker.imagePullPolicy>
+    <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+    <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -55,7 +59,11 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-spring-web</artifactId>
+      <artifactId>quarkus-resteasy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-jsonb</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -84,14 +92,67 @@
   <build>
     <resources>
       <resource>
-        <filtering>true</filtering>
-        <directory>src/main/jkube</directory>
+        <directory>${project.basedir}/src/main/resources</directory>
       </resource>
       <resource>
+        <directory>${project.basedir}/src/main/jkube</directory>
         <filtering>true</filtering>
-        <directory>src/main/resources</directory>
       </resource>
     </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.jkube</groupId>
+          <artifactId>openshift-maven-plugin</artifactId>
+          <version>${jkube-maven-plugin.version}</version>
+          <configuration>
+            <images>
+              <image>
+                <name>rosa-fruits-app:latest</name>
+                <build>
+                  <from>quay.io/jkube/jkube-java-binary-s2i:0.0.9</from>
+                  <env>
+                    <JAVA_APP_JAR>quarkus-run.jar</JAVA_APP_JAR>
+                  </env>
+                  <assembly>
+                    <mode>dir</mode>
+                    <targetDir>/deployments</targetDir>
+                    <inline>
+                      <id>customized-quarkus</id>
+                      <files>
+                        <file>
+                          <source>target/quarkus-app/quarkus-run.jar</source>
+                          <outputDirectory>.</outputDirectory>
+                        </file>
+                      </files>
+                      <fileSets>
+                        <fileSet>
+                          <directory>${project.basedir}/target/quarkus-app/lib
+                          </directory>
+                          <outputDirectory>lib</outputDirectory>
+                        </fileSet>
+                        <fileSet>
+                          <directory>${project.basedir}/target/quarkus-app/app
+                          </directory>
+                          <outputDirectory>app</outputDirectory>
+                        </fileSet>
+                        <fileSet>
+                          <directory>
+                            ${project.basedir}/target/quarkus-app/quarkus
+                          </directory>
+                          <outputDirectory>quarkus</outputDirectory>
+                        </fileSet>
+                      </fileSets>
+                    </inline>
+                  </assembly>
+                  <ports>8080</ports>
+                </build>
+              </image>
+            </images>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>io.quarkus</groupId>
@@ -123,6 +184,43 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.eclipse.jkube</groupId>
+        <artifactId>openshift-maven-plugin</artifactId>
+        <version>${jkube-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>resource</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${build-helper-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>add-resource</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/frontend/build
+                  </directory>
+                  <targetPath>frontend</targetPath>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -138,63 +236,18 @@
           <plugin>
             <groupId>org.eclipse.jkube</groupId>
             <artifactId>openshift-maven-plugin</artifactId>
-            <version>1.1.1</version>
+            <version>${jkube-maven-plugin.version}</version>
             <executions>
               <execution>
-                <id>jkube-all</id>
+                <id>oc-deploy</id>
                 <phase>package</phase>
                 <goals>
-                  <goal>resource</goal>
                   <goal>build</goal>
+                  <goal>resource</goal>
                   <goal>apply</goal>
                 </goals>
               </execution>
             </executions>
-            <configuration>
-              <images>
-                <image>
-                  <name>rosa-fruits-app:latest</name>
-                  <build>
-                    <from>quay.io/jkube/jkube-java-binary-s2i:0.0.9</from>
-                    <env>
-                      <JAVA_APP_JAR>quarkus-run.jar</JAVA_APP_JAR>
-                    </env>
-                    <assembly>
-                      <mode>dir</mode>
-                      <targetDir>/deployments</targetDir>
-                      <inline>
-                        <id>customized-quarkus</id>
-                        <files>
-                          <file>
-                            <source>target/quarkus-app/quarkus-run.jar</source>
-                            <outputDirectory>.</outputDirectory>
-                          </file>
-                        </files>
-                        <fileSets>
-                          <fileSet>
-                            <directory>${project.basedir}/target/quarkus-app/lib
-                            </directory>
-                            <outputDirectory>lib</outputDirectory>
-                          </fileSet>
-                          <fileSet>
-                            <directory>${project.basedir}/target/quarkus-app/app
-                            </directory>
-                            <outputDirectory>app</outputDirectory>
-                          </fileSet>
-                          <fileSet>
-                            <directory>
-                              ${project.basedir}/target/quarkus-app/quarkus
-                            </directory>
-                            <outputDirectory>quarkus</outputDirectory>
-                          </fileSet>
-                        </fileSets>
-                      </inline>
-                    </assembly>
-                    <ports>8080</ports>
-                  </build>
-                </image>
-              </images>
-            </configuration>
           </plugin>
         </plugins>
       </build>
@@ -235,6 +288,54 @@
       <properties>
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
+    </profile>
+    <profile>
+      <id>build-ui</id>
+      <activation>
+        <property>
+          <name>ui</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>${exec-maven-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>npm-install</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <workingDirectory>src/main/frontend</workingDirectory>
+                  <executable>npm</executable>
+                  <arguments>
+                    <argument>install</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>npm-build</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <workingDirectory>src/main/frontend</workingDirectory>
+                  <executable>npm</executable>
+                  <arguments>
+                    <argument>run</argument>
+                    <argument>build</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>

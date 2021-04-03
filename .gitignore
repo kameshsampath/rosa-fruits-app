@@ -37,7 +37,6 @@ nb-configuration.xml
 *.orig
 *.rej
 
-.env
 **/work/
 .kube
 playbook.yml
@@ -49,4 +48,3 @@ docker
 passwords
 **/node_modules
 yarn.lock
-/ui/build/

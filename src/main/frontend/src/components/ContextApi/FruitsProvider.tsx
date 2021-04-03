@@ -24,11 +24,11 @@ const FruitsProvider: React.FC = (props) => {
     return season?.label
   }
   React.useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_HOST}/api/fruits`)
+    fetch(`${process.env.REACT_APP_API_URL}/fruits`)
       .then(async (resp) => {
         const data = await resp.json()
         if (resp.ok) {
-          console.log("Fruits Data %s", JSON.stringify(data));
+          //console.log("Fruits Data %s", JSON.stringify(data));
           const rowsData = data.map((d: any) => {
             return {
               cells: [
@@ -43,14 +43,14 @@ const FruitsProvider: React.FC = (props) => {
             payload: rowsData
           })
         } else {
-          console.log("Error %s", JSON.stringify(data));
-          var payload: any = {};
+          //console.log("Error %s", JSON.stringify(data));
+          const payload: any = {};
           if (data.status === 500) {
             payload.loaded = true;
-            payload.loadError = "Some Error occured fetching the fruits";
+            payload.loadError = "Some Error occurred fetching the fruits";
           } else {
             payload.loaded = true;
-            payload.loadError = `${data.status} ${data.message}`;
+            payload.loadError = `Error Code:${data.status}, Error: ${data.message}`;
           }
           dispatch({
             type: FRUITS_LOADED_FAILED,
@@ -59,7 +59,7 @@ const FruitsProvider: React.FC = (props) => {
         }
       })
       .catch((err) => {
-        console.log('Error Retriving Fruits: %s', err);
+        console.log('Error Retrieving Fruits: %s', err);
       })
     // eslint-disable-next-line
   }, [])
